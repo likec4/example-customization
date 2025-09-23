@@ -23,7 +23,11 @@ export function CustomShape({nodeModel, nodeProps}: ElementNodeProps<UnknownLayo
       </>
     }
     case nodeData.shape === 'rectangle': {
-      return <RoughRectangle width={nodeData.width} height={nodeData.height}/>
+      return <RoughRectangle
+        hovered={nodeProps.selected || nodeData.hovered}
+        width={nodeData.width}
+        height={nodeData.height}
+      />
     }
     default: {
       return <ElementShape {...nodeProps}/>
@@ -61,24 +65,23 @@ const StripeLogo = () => (
   </svg>
 )
 
-const radius = 8
-const ARC = `a${radius},${radius} 0 0 1`
-
-const RoughRectangle = ({width, height}: {width: number, height: number}) => {
-  const seed = useRef(Rough.newSeed())
-  const gen = Rough.generator({
-    options: {
-      preserveVertices: true,
-      seed: seed.current      
-    }
-  })
-
-  const padding = 4
-  const horizontal = width - (radius + padding) * 2
-  const vertical = height - (radius + padding) * 2
-  
-  const d = [
-    `M${radius + padding},${padding}`,
+function roundRect({
+    width,
+    height,
+    radius = 8,
+    offset = 4
+}: {
+    width: number,
+    height: number,
+    radius?: number,
+    offset?: number
+}) {
+  const horizontal = width - (radius + offset) * 2
+  const vertical = height - (radius + offset) * 2
+  const ARC = `a${radius},${radius} 0 0 1`
+  return [
+    `M${offset},${offset}`,
+    `m${radius},0`,
     `h${horizontal}`,
     `${ARC} ${radius},${radius}`,
     `v${vertical}`,
@@ -89,22 +92,55 @@ const RoughRectangle = ({width, height}: {width: number, height: number}) => {
     `${ARC} ${radius},-${radius}`,
     `z`
   ].join(' ')
-  
-  const paths = gen.toPaths(
-    gen.path(d, {
+}
+
+const RoughRectangle = ({
+  width,
+  height,
+  hovered
+}: {
+  hovered: boolean | undefined,
+  width: number,
+  height: number
+}) => {
+  const seed = useRef(Rough.newSeed())
+  const gen = Rough.generator({
+    options: {      
+      fill: 'none',
+      stroke: 'none',
+      fillStyle: 'solid',
+      strokeWidth: 2,
+      seed: seed.current      
+    }
+  })  
+
+
+  const paths = [
+    // fill
+    gen.path(roundRect({width, height}), {    
+      bowing: 1.2,
+      roughness: hovered ? 1.2 : 2.5,
       fill: 'var(--likec4-palette-fill)',
       fillStyle: 'zigzag',
-      simplification: 0.7,
-      disableMultiStroke: true,
-      fillWeight: 1.5,
-      hachureGap: 8,
-      hachureAngle: -60,
-      fixedDecimalPlaceDigits: 2,
+      fillWeight: 2,
+      hachureGap: hovered ? 4 : 6,
+      hachureAngle: hovered ? -55 : -60,
       stroke: 'var(--likec4-palette-stroke)',
-      strokeWidth: 3,   
-      curveFitting: 1
-    })
-  ) 
+      strokeWidth: 4,
+      disableMultiStroke: true,
+      preserveVertices: true
+   }),
+    // or have separate more accurate stroke
+    // gen.path(roundRect({width, height}), {
+    //   disableMultiStrokeFill: true,
+    //   bowing: 0.5,
+    //   roughness: 0.9,
+    //   preserveVertices: true,
+    //   stroke: 'var(--likec4-palette-stroke)',
+    //   strokeWidth: 3,      
+    // })
+  ].flatMap(d => gen.toPaths(d))
+
 
   return <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -121,6 +157,12 @@ const RoughRectangle = ({width, height}: {width: number, height: number}) => {
       height: '100%',
     }}
     >
-    {paths.map((path, index) => <path key={index} {...path} />)}
+    {paths.map((path, index) =>
+      <path
+      key={index}
+      strokeLinecap='round'
+      strokeLinejoin='round'
+      {...path}
+    />)}
   </svg>
 }

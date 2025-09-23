@@ -1,38 +1,56 @@
-# LikeC4 Custom Nodes Example
+# LikeC4 Customization Example
 
-This project demonstrates advanced customization capabilities of **LikeC4** - a powerful architecture diagramming tool that combines the expressiveness of a domain-specific language with the flexibility of React components.
+This repository demonstrates advanced customization capabilities of **LikeC4**.
 
-## 🎯 Purpose
+## Purpose
 
 The main purpose of this example is to showcase how to extend and customize LikeC4's default behavior through:
 
 - **Custom Element Nodes**: Override default node rendering with custom React components
-- **Custom Overlays**: Create interactive overlays for displaying detailed information
+- **Custom Overlays**: Create interactive dialogs for displaying detailed information
 - **Custom Shapes**: Implement unique visual representations using SVG and drawing libraries
 - **Enhanced Interactions**: Add custom buttons, toolbars, and interactive behaviors
-- **Style Customization**: Inject custom CSS and theming
+- **Style Customization**: Override default theme and inject custom CSS
 
-## ▶️ Open Online
+## Try Online
 
-- StackBlitz: [Open in StackBlitz](https://stackblitz.com/github/OWNER/REPO)
-- CodeSandbox: [Open in CodeSandbox](https://codesandbox.io/p/github/OWNER/REPO)
-- Gitpod: [Open in Gitpod](https://gitpod.io/#https://github.com/OWNER/REPO)
+Open this repository with:
+- StackBlitz: [Open in StackBlitz](https://stackblitz.com/github/likec4/example-customization)
+- CodeSandbox: [Open in CodeSandbox](https://codesandbox.io/p/github/likec4/example-customization)
+- Gitpod: [Open in Gitpod](https://gitpod.io/#https://github.com/likec4/example-customization)
 
-Replace `OWNER/REPO` with your GitHub repository path after pushing this project to GitHub.
 
-## 🏗️ Architecture Source
+## Architecture Source
 
-View the complete architecture model in the [LikeC4 DSL source file](likec4/showcase.c4).
+View the architecture model in the [LikeC4 DSL source file](likec4/showcase.c4).
 
 ## 🚀 Key Customizations Demonstrated
 
-### 1. Custom Element Nodes (`src/CustomNodes.tsx`)
+This project created by `npx create-vite --template react-ts`.  
+It uses the [LikeC4 Vite plugin](https://likec4.dev/tooling/vite-plugin/) to load and compile the `.c4` model files.
+
+### 1. Custom Nodes (`src/CustomNodes.tsx`)
 
 ```tsx
+import {
+  DefaultHandles,
+  ElementActions,
+  ElementData,
+  ElementNodeContainer,
+  XYFlow,
+  elementNode,
+  useDiagram,
+} from 'likec4/react'
+
+// Custom rendering of logical elements:
+// - adds extra action button
+// - displays toolbar with metadata on hover
 export const ElementNode = elementNode(({ nodeModel, nodeProps }) => {
-  // Custom node with additional buttons and metadata display
+  const diagram = useDiagram()
+  
   return (
     <ElementNodeContainer nodeProps={nodeProps}>
+      {/* Use custom shape, see below */}
       <CustomShape nodeModel={nodeModel} nodeProps={nodeProps} />
       <ElementData {...nodeProps} />
       <ElementActions {...nodeProps}
@@ -47,54 +65,33 @@ export const ElementNode = elementNode(({ nodeModel, nodeProps }) => {
       />
       <DefaultHandles />
       {/* Custom toolbar with metadata */}
-      {isHoveredOrSelected && nodeModel.element.hasMetadata() && (
-        <XYFlow.NodeToolbar>
-          <div className='metadata'>
-            {Object.entries(nodeModel.element.getMetadata()).map(([key, value]) => (
-              <Fragment key={key}>
-                <div data-metadata-key>{key}</div>
-                <div data-metadata-value>{value}</div>
-              </Fragment>
-            ))}
-          </div>
-        </XYFlow.NodeToolbar>
-      )}
+      {nodeProps.data.hovered
+       && nodeModel.element.hasMetadata()
+       && (
+          <XYFlow.NodeToolbar>
+            {entries(nodeModel.element.getMetadata())
+              .map(([key, value]) => (
+                <MetadataValue key={key} label={key} value={value} />
+              ))}
+          </XYFlow.NodeToolbar>
+        )
+      }
     </ElementNodeContainer>
   );
 })
 ```
 
-### 2. Custom Overlay System (`src/CustomOverlay.tsx`)
+### 2. Custom Shapes (`src/CustomShapes.tsx`)
 
-```tsx
-export function CustomOverlay() {
-  const likec4model = useLikeC4Model()
-  const { visibleElement, close } = useCustomOverlay()
-
-  const element = visibleElement ? likec4model.findElement(visibleElement) : null
-
-  return (
-    <PortalToContainer>
-      {element && (
-        <Overlay onClose={close} openDelay={100}>
-          <h1>Custom Overlay</h1>
-          <pre>
-            <code>{JSON.stringify(element.$element, null, 2)}</code>
-          </pre>
-        </Overlay>
-      )}
-    </PortalToContainer>
-  )
-}
-```
-
-### 3. Custom Shapes (`src/CustomShapes.tsx`)
-
-- **Stripe Logo Integration**: Dynamically displays Stripe logo based on metadata
+- **Render anything on top of default shape**: This example displays Stripe logo based on metadata
 - **Hand-drawn Rectangles**: Uses RoughJS to create organic, sketch-like rectangles
+- **Fallback to default shape**: If no custom shape is found, the default shape is rendered
 
 ```tsx
-export function CustomShape({nodeModel, nodeProps}: ElementNodeProps<UnknownLayouted>) {
+import type { ElementNodeProps } from 'likec4/react'
+import { ElementShape } from 'likec4/react'
+
+export function CustomShape({nodeModel, nodeProps}: ElementNodeProps) {
   const metadata = nodeModel.element.getMetadata()
   const nodeData = nodeProps.data
 
@@ -115,43 +112,58 @@ export function CustomShape({nodeModel, nodeProps}: ElementNodeProps<UnknownLayo
 }
 ```
 
-### 4. Enhanced Styling (`src/styles.css`)
+### 3. Custom Overlay (`src/CustomOverlay.tsx`)
 
-Custom CSS injected into the LikeC4 shadow DOM for consistent theming and additional visual effects.
-
-### 5. Context and State Management (`src/context.ts`)
+LikeC4 provides a `PortalToContainer` that can be used to render your components in the diagram's Shadow DOM.
 
 ```tsx
-export const CustomOverlayCtx = createContext({
-  visibleElement: null as Fqn | null,
-  open: (_fqn: Fqn) => { },
-  close: () => { }
-} as const)
+import { 
+  Overlay,
+  PortalToContainer,
+  useLikeC4Model,
+} from 'likec4/react'
+
+export function CustomOverlay({ elementId, close }: Props) {
+  const likec4model = useLikeC4Model()
+  const element = likec4model.findElement(elementId)
+
+  return (
+    <PortalToContainer>
+      {element && (
+        <Overlay onClose={close}>
+          <h1>Custom Overlay</h1>
+          <pre>
+            <code>{JSON.stringify(element.$element, null, 2)}</code>
+          </pre>
+        </Overlay>
+      )}
+    </PortalToContainer>
+  )
+}
 ```
 
-### 6. Configuration-Based Styling (`likec4/likec4.config.ts`)
+### 4. Override Default Theme (`likec4/likec4.config.ts`)
 
-You can override default colors and relationship styles globally using `likec4/likec4.config.ts`.
+You can override default colors and styles globally using `likec4/likec4.config.ts`.
 
 ```ts
 import { defineConfig } from 'likec4/config'
 
 export default defineConfig({
-  name: 'cloud-system',
-  title: 'Cloud System',
+  name: 'example',
   styles: {
     theme: {
       colors: {
-        primary: '#256828ff',
-        muted: '#484e4cff'
+        // This will override the default primary color
+        primary: '#256828',
       }
     },
     defaults: {
-      color: 'sky',
+      color: 'sky', // Set default color for nodes,
+                    // replacing "primary"
       opacity: 10,
       relationship: {
-        color: 'muted',
-        line: 'dotted',
+        line: 'solid',
         arrow: 'open'
       }
     }
@@ -159,33 +171,19 @@ export default defineConfig({
 })
 ```
 
-- Theme: overrides global palette (e.g., `primary`, `muted`).
-- Defaults: sets baseline element `color`, `opacity`, and relationship style (`color`, `line`, `arrow`).
-
-## 🔧 Technical Stack
-
-- **LikeC4**: Core diagramming engine
-- **React 19**: UI framework with hooks and context
-- **TypeScript**: Type-safe development
-- **Vite**: Fast build tool and development server
-- **RoughJS**: Hand-drawn style graphics
-- **React Use**: Additional React utilities
-
-## 📋 Prerequisites
+## Prerequisites
 
 - Node.js 20+
 - pnpm (recommended) or npm
 
-## 🚀 Getting Started
-
-> Note: This project uses the LikeC4 Vite plugin to load and compile the `.c4` model files. See the docs: https://likec4.dev/tooling/vite-plugin/
+## Getting Started
 
 1. **Install dependencies**:
    ```bash
    pnpm install
    ```
    The Vite plugin is automatically enabled via your project configuration - `vite.config.ts`.  
-   TypeScript ambient types are hooked up via `src/vite-env.d.ts`.
+
 
 2. **Start development server**:
    ```bash
@@ -195,19 +193,15 @@ export default defineConfig({
 3. **Open your browser**:
    Navigate to `http://localhost:5173`
 
-4. **Reference types** (already set up):
+4. **Reference types** (already set up):  
    In `src/vite-env.d.ts`, we include:
+   TypeScript ambient types are hooked up via `src/vite-env.d.ts`.  
    ```ts
    /// <reference types="likec4/vite-plugin-modules" />
-   ```
-   This augments TypeScript with module declarations exposed by the LikeC4 Vite plugin so imports like `likec4:react` and `likec4/react` resolve with proper types.
+   ```   
+   This augments TypeScript with module declarations exposed by the LikeC4 Vite plugin so imports like `likec4:react` resolve with proper types.
 
-5. **Explore the diagram**:
-   - Hover over elements to see custom toolbars
-   - Click the "+" button on elements to open custom overlays
-   - Notice the hand-drawn style rectangles and Stripe logo
-
-## 🔗 Routing and View Navigation
+## Routing and View Navigation
 
 Routing between views is handled via the URL hash. The app reads the hash to decide which LikeC4 view to display and updates it on navigation:
 
@@ -226,42 +220,13 @@ const viewId = hash.slice(1) || 'index'
 - Deep-linking: shareable URLs like `/#saas` open the `saas` view.
 - Back/forward navigation: browser history works naturally with hash changes.
 
-## 🎨 Customization Examples
+## Learn More
 
-### Adding New Shape Types
-
-1. Define the shape logic in `CustomShapes.tsx`
-2. Add corresponding styles in `styles.css`
-3. Use metadata in your LikeC4 model to trigger the custom shape
-
-### Extending Node Behavior
-
-1. Modify `CustomNodes.tsx` to add new buttons or interactions
-2. Use the `useDiagram` hook to access diagram functionality
-3. Leverage `useLikeC4Model` for programmatic model access
-
-### Creating Custom Overlays
-
-1. Extend the context in `context.ts`
-2. Add new overlay components in `CustomOverlay.tsx`
-3. Connect overlay triggers in your custom nodes
-
-## 📖 Learn More
-
-- [LikeC4 Documentation](https://likec4.org)
-- [React Integration Guide](https://likec4.org/docs/react)
-- [DSL Reference](https://likec4.org/docs/dsl)
+- [LikeC4 website](https://likec4.dev)
+- [DSL Reference](hhttps://likec4.dev/dsl/intro/)
 - [Vite Plugin Docs](https://likec4.dev/tooling/vite-plugin/)
+- [React Integration Guide](https://likec4.dev/tooling/react/)
 
-## 🤝 Contributing
-
-This example project demonstrates various customization patterns. Feel free to:
-
-- Experiment with new shape implementations
-- Add interactive features
-- Improve the styling and theming
-- Extend the model with additional elements
-
-## 📄 License
+## License
 
 This project is provided as an educational example for LikeC4 customization.

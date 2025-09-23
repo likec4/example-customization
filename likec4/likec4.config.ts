@@ -1,3 +1,4 @@
+import { oliveDark, oliveDarkA } from '@radix-ui/colors'
 import { defineConfig } from 'likec4/config'
 
 export default defineConfig({
@@ -6,12 +7,26 @@ export default defineConfig({
   styles: {
     theme: {
       colors: {
-        primary: '#256828ff',
-        muted: '#484e4cff'
+        // Override default colors 
+        primary: '#256828',
+        // Or specify exact colors
+        muted: {
+          elements: {
+            fill: oliveDark.olive9,
+            stroke: oliveDark.olive7,
+            hiContrast: oliveDarkA.oliveA12,
+            loContrast: oliveDarkA.oliveA11
+          },
+          relationships: {
+            line: oliveDark.olive10,
+            label: oliveDarkA.oliveA12,
+            labelBg: oliveDark.olive2
+          }
+        }
       }
     },
     defaults: {
-      color: 'sky',
+      color: 'primary',  
       opacity: 10,
       relationship: {
         color: 'muted',

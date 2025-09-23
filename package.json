@@ -1,5 +1,5 @@
 {
-  "name": "likec4-example-custom-nodes",
+  "name": "likec4-customization-example",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -13,6 +13,7 @@
     "node": ">=20"
   },
   "dependencies": {
+    "@radix-ui/colors": "^3.0.0",
     "likec4": "https://pkg.pr.new/likec4/likec4@6793aeb",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",

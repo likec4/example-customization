@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@radix-ui/colors':
+        specifier: ^3.0.0
+        version: 3.0.0
       likec4:
         specifier: https://pkg.pr.new/likec4/likec4@6793aeb
         version: https://pkg.pr.new/likec4/likec4@6793aeb(picomatch@4.0.3)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
@@ -463,6 +466,9 @@ packages:
   '@likec4/core@https://pkg.pr.new/likec4/likec4/@likec4/core@6793aeb627db19d9bb6ece03715c65d926472411':
     resolution: {tarball: https://pkg.pr.new/likec4/likec4/@likec4/core@6793aeb627db19d9bb6ece03715c65d926472411}
     version: 1.41.0
+
+  '@radix-ui/colors@3.0.0':
+    resolution: {integrity: sha512-FUOsGBkHrYJwCSEtWRCIfQbZG7q1e6DgxCIOe1SUQzDe/7rXXeA47s8yCn6fuTNQAj1Zq4oTFi9Yjp3wzElcxg==}
 
   '@rolldown/pluginutils@1.0.0-beta.27':
     resolution: {integrity: sha512-+d0F4MKMCbeVUJwG96uQ4SgAznZNSq93I3V+9NHA4OpvqG8mRCpGdKmK8l/dl02h2CCDHwW2FqilnTyDcAnqjA==}
@@ -1746,6 +1752,8 @@ snapshots:
       unified: 11.0.5
     transitivePeerDependencies:
       - supports-color
+
+  '@radix-ui/colors@3.0.0': {}
 
   '@rolldown/pluginutils@1.0.0-beta.27': {}
 

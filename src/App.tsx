@@ -4,7 +4,7 @@ import { useHash } from 'react-use'
 import { ElementNode } from './CustomNodes'
 import { CustomOverlay } from './CustomOverlay'
 import { useCustomOverlay } from './context'
-import injectStyles from './styles.css?inline'
+import injectStyles from './App.css?inline'
 
 
 function App() {
