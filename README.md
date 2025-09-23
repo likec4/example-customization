@@ -223,7 +223,7 @@ const viewId = hash.slice(1) || 'index'
 ## Learn More
 
 - [LikeC4 website](https://likec4.dev)
-- [DSL Reference](hhttps://likec4.dev/dsl/intro/)
+- [DSL Reference](https://likec4.dev/dsl/intro/)
 - [Vite Plugin Docs](https://likec4.dev/tooling/vite-plugin/)
 - [React Integration Guide](https://likec4.dev/tooling/react/)
 
