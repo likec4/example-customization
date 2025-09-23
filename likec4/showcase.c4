@@ -1,0 +1,111 @@
+specification {
+  element actor {
+    style {
+      shape person
+    }
+  }
+  element softwareSystem
+  element container
+  element component
+  element database {
+    style {
+      shape storage
+    }
+  }
+  element external {
+    style {
+      color muted
+    }
+  }
+
+  color yellow #f1c40f
+
+}
+
+model {
+  // Top-level actors and systems
+  customer = actor 'Customer' {
+    description 'End user interacting with the product via web or mobile.'
+    link https://example.com/customer-docs
+
+    metadata {
+      attr1 'value1'
+      attr2 'value2'
+    }
+  }
+
+  analyticsTeam = actor 'Analytics Team' {
+    description 'Responsible for analytics and reporting.'
+    metadata {
+      attr1 'analytics team'
+    }
+  }
+
+  saas = softwareSystem 'Demo System' {
+    summary 'A demo system showing architecture modeling with LikeC4 DSL'
+  
+
+    // Containers inside the system
+    web = container 'Frontend' {
+      technology 'React + TypeScript'
+      description 'Single Page App served from CDN'
+      style {
+        icon tech:react
+        shape browser
+      }
+    }
+
+    backend = container 'Backend Cluster' 'Kotlin services' {
+      icon tech:kotlin
+      description 'Set of microservices handling business logic'
+    }
+  }
+
+  // External services
+  stripe = external 'Stripe' {
+    description 'Payments provider'
+    link https://stripe.com
+    metadata {
+      _shape 'stripe'
+    }
+  }
+  cloudflare = external 'Cloudflare CDN' {
+    icon tech:cloudflare
+    description 'Static assets'
+    metadata {
+      region 'US'
+    }
+  }
+  analyticsDb = database 'Analytics DB' {
+    technology 'Clickhouse'
+    description 'Time-series analytics store'
+    style {
+      color yellow
+      icon ./clickhouse.svg
+    }
+    metadata {
+      region 'EU'
+      sla '99.9%'
+    }
+  }
+
+  customer -> web 'interacts with'
+  web -> backend 'GraphQL requests'
+  backend -> stripe 'charge card'
+
+  analyticsTeam -> analyticsDb 'query / build reports'
+
+  web -> cloudflare 'serve static bundle'
+  backend -> analyticsDb 'write aggregated stats'
+
+}
+
+views {
+  view index {
+    include *, saas.*
+  }
+
+  view saas of saas {
+    include *
+  }
+}
