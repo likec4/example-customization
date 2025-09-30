@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@radix-ui/colors": "^3.0.0",
-    "likec4": "https://pkg.pr.new/likec4/likec4@82cb4e5",
+    "likec4": "latest",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-use": "^17.6.0",
