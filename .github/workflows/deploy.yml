@@ -38,6 +38,10 @@ jobs:
         id: pages
         uses: actions/configure-pages@v4
 
+      - name: Install
+        run: |
+          pnpm install
+
       - name: Build
         run: |
           pnpm vite build \
