@@ -1,10 +1,10 @@
 
 import { ReactLikeC4 } from 'likec4:react'
 import { useHash } from 'react-use'
+import injectStyles from './App.css?inline'
 import { ElementNode } from './CustomNodes'
 import { CustomOverlay } from './CustomOverlay'
 import { useCustomOverlay } from './context'
-import injectStyles from './App.css?inline'
 
 
 function App() {
@@ -18,6 +18,12 @@ function App() {
       colorScheme='dark'
       viewId={viewId}
       controls
+      fitViewPadding={{
+        top: '80px',
+        left: '30px',
+        right: '30px',
+        bottom: '30px',
+      }}
       background='dots'
       enableElementDetails
       enableFocusMode

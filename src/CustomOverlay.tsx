@@ -1,5 +1,5 @@
 import type { Fqn } from 'likec4/model';
-import { Overlay, PortalToContainer } from 'likec4/react';
+import { Overlay, PortalToContainer, useDiagram } from 'likec4/react';
 import { useLikeC4Model } from 'likec4:react';
 import { useMemo, useState, type PropsWithChildren } from 'react';
 import { CustomOverlayCtx, useCustomOverlay } from './context';
@@ -20,6 +20,7 @@ export const CustomOverlayProvider = ({ children }: PropsWithChildren) => {
 
 export function CustomOverlay() {
   const likec4model = useLikeC4Model()
+  const diagram = useDiagram()
   const { visibleElement, close } = useCustomOverlay()
 
   const element = visibleElement ? likec4model.findElement(visibleElement) : null
@@ -32,11 +33,43 @@ export function CustomOverlay() {
     <PortalToContainer>
       {element && (
         <Overlay onClose={close} openDelay={100}>
-          <h1>Custom Overlay</h1>
-          {/* Stringify source data of element */}
-          <pre>
-            <code>{JSON.stringify(element.$element, null, 2)}</code>
-          </pre>
+          <div style={{ padding: 32 }}>
+            <h2>Custom Overlay</h2>
+            <p>Here you have access to the LikeC4 ModelAPI and can display any custom content</p>
+            {element.hasMetadata() ? (
+              <>
+                <p>For example, you can display the element's metadata:</p>
+                <pre>
+                  <code>{JSON.stringify(element.getMetadata(), null, 2)}</code>
+                </pre>
+              </>
+            ) : (
+              <>
+                <p>For example, you can display the element's source data:</p>
+                {/* Stringify source data of element */}
+                <pre>
+                  <code>{JSON.stringify(element.$element, null, 2)}</code>
+                </pre>
+              </>
+            )}
+            <p>You can also trigger Diagram API:</p>
+            <button
+              onClick={() => {
+                const viewId = diagram.currentView.id
+                const another = [...likec4model.views()].find(v => v.id !== viewId)
+                if (another) {
+                  setTimeout(() => {
+                    // Animate transition to another view from the current node
+                    const fromNode = likec4model.view(viewId).findNodeWithElement(element)
+                    diagram.navigateTo(another.id, fromNode?.id)
+                  }, 100)
+                }
+                close()
+              }}>
+              Open another view
+            </button>
+
+          </div>
         </Overlay>
       )}
     </PortalToContainer>

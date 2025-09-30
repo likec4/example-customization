@@ -50,7 +50,7 @@ export const ElementNode = elementNode(({ nodeModel, nodeProps }) => {
           data-likec4-color={nodeProps.data.color}
           // ❇️ This is a class from styles.css
           //    injected in the shadow DOM
-          className='node-toolbar '
+          className='node-toolbar'
         >
           <div style={{ fontSize: 24 }}>🛠️</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>

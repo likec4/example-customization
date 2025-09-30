@@ -14,11 +14,13 @@
   },
   "dependencies": {
     "@radix-ui/colors": "^3.0.0",
-    "likec4": "https://pkg.pr.new/likec4/likec4@6793aeb",
+    "likec4": "https://pkg.pr.new/likec4/likec4@82cb4e5",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-use": "^17.6.0",
-    "roughjs": "^4.6.6"
+    "roughjs": "^4.6.6",
+    "@xyflow/react": "12.8.4",
+    "@xyflow/system": "0.0.68"
   },
   "devDependencies": {
     "@types/react": "^19.1.13",
