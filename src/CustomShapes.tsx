@@ -1,8 +1,4 @@
-import type { UnknownLayouted } from 'likec4/model';
-import {
-  ElementShape,
-  type ElementNodeProps
-} from 'likec4/react';
+import { ElementShape, type ElementNodeProps } from 'likec4/react';
 import { useRef } from 'react';
 import Rough from 'roughjs';
 
@@ -11,15 +7,15 @@ import Rough from 'roughjs';
  * Renders different shapes based on the node's metadata or data.
  * Otherwise, it renders the default node shape.
  */
-export function CustomShape({nodeModel, nodeProps}: ElementNodeProps<UnknownLayouted>) {
-  const metadata = nodeModel.element.getMetadata()  
+export function CustomShape({ nodeModel, nodeProps }: ElementNodeProps) {
+  const metadata = nodeModel.element.getMetadata()
   const nodeData = nodeProps.data
-  switch(true) {
+  switch (true) {
     case metadata._shape === 'stripe': {
       // Render the default node shape and the stripe logo above it
       return <>
-        <ElementShape {...nodeProps}/>
-        <StripeLogo/>
+        <ElementShape {...nodeProps} />
+        <StripeLogo />
       </>
     }
     case nodeData.shape === 'rectangle': {
@@ -30,7 +26,7 @@ export function CustomShape({nodeModel, nodeProps}: ElementNodeProps<UnknownLayo
       />
     }
     default: {
-      return <ElementShape {...nodeProps}/>
+      return <ElementShape {...nodeProps} />
     }
   }
 }
@@ -66,15 +62,15 @@ const StripeLogo = () => (
 )
 
 function roundRect({
-    width,
-    height,
-    radius = 8,
-    offset = 4
+  width,
+  height,
+  radius = 8,
+  offset = 4
 }: {
-    width: number,
-    height: number,
-    radius?: number,
-    offset?: number
+  width: number,
+  height: number,
+  radius?: number,
+  offset?: number
 }) {
   const horizontal = width - (radius + offset) * 2
   const vertical = height - (radius + offset) * 2
@@ -105,19 +101,19 @@ const RoughRectangle = ({
 }) => {
   const seed = useRef(Rough.newSeed())
   const gen = Rough.generator({
-    options: {      
+    options: {
       fill: 'none',
       stroke: 'none',
       fillStyle: 'solid',
       strokeWidth: 2,
-      seed: seed.current      
+      seed: seed.current
     }
-  })  
+  })
 
 
   const paths = [
     // fill
-    gen.path(roundRect({width, height}), {    
+    gen.path(roundRect({ width, height }), {
       bowing: 1.2,
       roughness: hovered ? 1.2 : 2.5,
       fill: 'var(--likec4-palette-fill)',
@@ -129,7 +125,7 @@ const RoughRectangle = ({
       strokeWidth: 4,
       disableMultiStroke: true,
       preserveVertices: true
-   }),
+    }),
     // or have separate more accurate stroke
     // gen.path(roundRect({width, height}), {
     //   disableMultiStrokeFill: true,
@@ -156,13 +152,13 @@ const RoughRectangle = ({
       width: '100%',
       height: '100%',
     }}
-    >
+  >
     {paths.map((path, index) =>
       <path
-      key={index}
-      strokeLinecap='round'
-      strokeLinejoin='round'
-      {...path}
-    />)}
+        key={index}
+        strokeLinecap='round'
+        strokeLinejoin='round'
+        {...path}
+      />)}
   </svg>
 }

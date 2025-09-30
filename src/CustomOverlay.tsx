@@ -30,6 +30,7 @@ export function CustomOverlay() {
   }
 
   return (
+    // This is a portal to the diagram container, so the overlay is rendered above the diagram
     <PortalToContainer>
       {element && (
         <Overlay onClose={close} openDelay={100}>
