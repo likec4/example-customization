@@ -44,8 +44,8 @@ jobs:
 
       - name: Build
         run: |
-          pnpm vite build --base "${{ steps.pages.outputs.base_path }}" --output dist
-
+          pnpm vite build --base "${{ steps.pages.outputs.base_path }}"
+          
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
