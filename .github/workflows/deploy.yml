@@ -31,8 +31,6 @@ jobs:
 
       - name: Setup node
         uses: actions/setup-node@v4
-        with:
-          cache: "pnpm"
 
       - name: Setup Pages
         id: pages
